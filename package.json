@@ -2,7 +2,7 @@
   "name": "jeab-clawler",
   "version": "1.0.0",
   "description": "",
-  "main": "src",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js"
@@ -10,6 +10,12 @@
   "author": "xeonkung",
   "license": "ISC",
   "dependencies": {
-    "phantom": "^4.0.4"
+    "commander": "^2.11.0",
+    "node-horseman": "^3.3.0",
+    "node-xlsx": "^0.7.4",
+    "phantomjs-prebuilt": "^2.1.14",
+    "prompt": "^1.0.0",
+    "tabletojson": "^0.6.0",
+    "valid-url": "^1.0.9"
   }
 }
