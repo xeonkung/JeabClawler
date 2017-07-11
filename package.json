@@ -1,0 +1,15 @@
+{
+  "name": "jeab-clawler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js"
+  },
+  "author": "xeonkung",
+  "license": "ISC",
+  "dependencies": {
+    "phantom": "^4.0.4"
+  }
+}
