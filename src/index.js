@@ -66,10 +66,24 @@ var existCrop = function (selector, name) {
         .exists(selector)
         .then(function (r) {
             if (r) {
-                return self.crop(selector, name)
+                return self.crop(selector, name);
             }
         });
-}
+};
+var existSelectCrop = function (selectorV, name, selectorS, val, waitFn) {
+    var self = this;
+    return this
+        .exists(selectorS)
+        .then(function (r) {
+            if (r) {
+
+                return self
+                    .select(selectorS, val)
+                    .waitFor(waitFn, true)
+                    .crop(selectorV, name);
+            }
+        });
+};
 var searchOption = function (options) {
     var _options = defaults(options, {
         year: {start: 1996, end: 2016},
@@ -98,6 +112,7 @@ var searchOption = function (options) {
 Horseman.registerAction('pushToSheets', pushToSheets);
 Horseman.registerAction('searchOption', searchOption);
 Horseman.registerAction('existCrop', existCrop);
+Horseman.registerAction('existSelectCrop', existSelectCrop);
 var loadPhantomInstance = function () {
 
     var options = {
@@ -142,6 +157,26 @@ var main = function (opts, idx = 0) {
     if (!fs.existsSync(folderPath)) {
         fs.mkdirSync(folderPath);
     }
+    var onSelectSmallContent4Change = function () {
+        window.SelectSmallContent4.change();
+        return true;
+    };
+    var onSelectSmallContent5Change = function () {
+        window.SelectSmallContent5.change();
+        return true;
+    };
+    var onSelectSmallContent6Change = function () {
+        window.SelectSmallContent6.change();
+        return true;
+    };
+    var onSelectSmallContent7Change = function () {
+        window.SelectSmallContent7.change();
+        return true;
+    };
+    var onSelectXLargeContent8Change = function () {
+        window.SelectXLargeContent8.change();
+        return true;
+    };
     phantomInstance
         .userAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36')
         .viewport(1280, 800)
@@ -154,15 +189,34 @@ var main = function (opts, idx = 0) {
         .pushToSheets('#placeHolderForm_GridViewTabularContentArea3', 'Distribution of Confirmed Infections', sheets)
         .existCrop('#placeHolderForm_LargeContent3', path.join(folderPath, afn(ssFile, 'Distribution')))
         .pushToSheets('#placeHolderForm_GridViewTabularContentArea4', 'Age Group', sheets)
-        .existCrop('#placeHolderForm_SmallContent4', path.join(folderPath, afn(ssFile, 'Age')))
+        .existCrop('#placeHolderForm_SmallContent4', path.join(folderPath, afn(ssFile, 'AgeInfections')))
+        .existSelectCrop('#placeHolderForm_SmallContent4', path.join(folderPath, afn(ssFile, 'AgeHospitalizations')), '#placeHolderForm_SelectSmallContent4', 'bar4Hosp', onSelectSmallContent4Change)
+        .existSelectCrop('#placeHolderForm_SmallContent4', path.join(folderPath, afn(ssFile, 'AgeDeaths')), '#placeHolderForm_SelectSmallContent4', 'bar4Death', onSelectSmallContent4Change)
+        .existSelectCrop('#placeHolderForm_SmallContent4', path.join(folderPath, afn(ssFile, 'AgeOutbreak-associated')), '#placeHolderForm_SelectSmallContent4', 'bar4Otbrk', onSelectSmallContent4Change)
+        .existSelectCrop('#placeHolderForm_SmallContent4', path.join(folderPath, afn(ssFile, 'AgeTravel-associated')), '#placeHolderForm_SelectSmallContent4', 'bar4Travel', onSelectSmallContent4Change)
         .pushToSheets('#placeHolderForm_GridViewTabularContentArea5', 'Sex', sheets)
-        .existCrop('#placeHolderForm_SmallContent5', path.join(folderPath, afn(ssFile, 'Sex')))
+        .existCrop('#placeHolderForm_SmallContent5', path.join(folderPath, afn(ssFile, 'SexInfections')))
+        .existSelectCrop('#placeHolderForm_SmallContent5', path.join(folderPath, afn(ssFile, 'SexHospitalizations')), '#placeHolderForm_SelectSmallContent5', 'bar5Hosp', onSelectSmallContent5Change)
+        .existSelectCrop('#placeHolderForm_SmallContent5', path.join(folderPath, afn(ssFile, 'SexDeaths')), '#placeHolderForm_SelectSmallContent5', 'bar5Death', onSelectSmallContent5Change)
+        .existSelectCrop('#placeHolderForm_SmallContent5', path.join(folderPath, afn(ssFile, 'SexOutbreak-associated')), '#placeHolderForm_SelectSmallContent5', 'bar5Otbrk', onSelectSmallContent5Change)
+        .existSelectCrop('#placeHolderForm_SmallContent5', path.join(folderPath, afn(ssFile, 'SexTravel-associated')), '#placeHolderForm_SelectSmallContent5', 'bar5Travel', onSelectSmallContent5Change)
         .pushToSheets('#placeHolderForm_GridViewTabularContentArea6', 'Race', sheets)
-        .existCrop('#placeHolderForm_SmallContent6', path.join(folderPath, afn(ssFile, 'Race')))
+        .existCrop('#placeHolderForm_SmallContent6', path.join(folderPath, afn(ssFile, 'RaceInfections')))
+        .existSelectCrop('#placeHolderForm_SmallContent6', path.join(folderPath, afn(ssFile, 'RaceHospitalizations')), '#placeHolderForm_SelectSmallContent6', 'bar6Hosp', onSelectSmallContent6Change)
+        .existSelectCrop('#placeHolderForm_SmallContent6', path.join(folderPath, afn(ssFile, 'RaceDeaths')), '#placeHolderForm_SelectSmallContent6', 'bar6Death', onSelectSmallContent6Change)
+        .existSelectCrop('#placeHolderForm_SmallContent6', path.join(folderPath, afn(ssFile, 'RaceOutbreak-associated')), '#placeHolderForm_SelectSmallContent6', 'bar6Otbrk', onSelectSmallContent6Change)
+        .existSelectCrop('#placeHolderForm_SmallContent6', path.join(folderPath, afn(ssFile, 'RaceTravel-associated')), '#placeHolderForm_SelectSmallContent6', 'bar6Travel', onSelectSmallContent6Change)
         .pushToSheets('#placeHolderForm_GridViewTabularContentArea7', 'Ethnicity', sheets)
-        .existCrop('#placeHolderForm_SmallContent7', path.join(folderPath, afn(ssFile, 'Ethnicity')))
+        .existCrop('#placeHolderForm_SmallContent7', path.join(folderPath, afn(ssFile, 'EthnicityInfections')))
+        .existSelectCrop('#placeHolderForm_SmallContent7', path.join(folderPath, afn(ssFile, 'EthnicityHospitalizations')), '#placeHolderForm_SelectSmallContent7', 'bar7Hosp', onSelectSmallContent7Change)
+        .existSelectCrop('#placeHolderForm_SmallContent7', path.join(folderPath, afn(ssFile, 'EthnicityDeaths')), '#placeHolderForm_SelectSmallContent7', 'bar7Death', onSelectSmallContent7Change)
+        .existSelectCrop('#placeHolderForm_SmallContent7', path.join(folderPath, afn(ssFile, 'EthnicityOutbreak-associated')), '#placeHolderForm_SelectSmallContent7', 'bar7Otbrk', onSelectSmallContent7Change)
+        .existSelectCrop('#placeHolderForm_SmallContent7', path.join(folderPath, afn(ssFile, 'EthnicityTravel-associated')), '#placeHolderForm_SelectSmallContent7', 'bar7Travel', onSelectSmallContent7Change)
         .pushToSheets('#placeHolderForm_GridView8', 'By the Numbers', sheets)
-        .existCrop('#placeHolderForm_XLargeContent8', path.join(folderPath, afn(ssFile, 'Numbers')))
+        .existCrop('#placeHolderForm_XLargeContent8', path.join(folderPath, afn(ssFile, 'NumbersInfections')))
+        .existSelectCrop('#placeHolderForm_XLargeContent8', path.join(folderPath, afn(ssFile, 'NumbersInfections')), '#placeHolderForm_SelectXLargeContent8', 'bar8', onSelectXLargeContent8Change)
+        .existSelectCrop('#placeHolderForm_XLargeContent8', path.join(folderPath, afn(ssFile, 'NumbersHospitalizations')), '#placeHolderForm_SelectXLargeContent8', 'hosp8', onSelectXLargeContent8Change)
+        .existSelectCrop('#placeHolderForm_XLargeContent8', path.join(folderPath, afn(ssFile, 'NumbersDeaths')), '#placeHolderForm_SelectXLargeContent8', 'dead8', onSelectXLargeContent8Change)
         .pushToSheets('#placeHolderForm_GridView9', 'Average Annual Incidence of Confirmed Infections by Site', sheets)
         .existCrop('#placeHolderForm_XLargeContent9', path.join(folderPath, afn(ssFile, 'Average')))
         .do(function (done) {
@@ -185,20 +239,20 @@ var main = function (opts, idx = 0) {
             ssFile: null,
             dataFile: null
         },
-        {
-            year: {start: 1996, end: 2016},
-            ages: [],
-            pathogen: [],
-            ssFile: null,
-            dataFile: null
-        },
-        {
-            year: {start: 2000, end: 2016},
-            ages: [],
-            pathogen: [],
-            ssFile: null,
-            dataFile: null
-        }
+        // {
+        //     year: {start: 1996, end: 2016},
+        //     ages: [],
+        //     pathogen: [],
+        //     ssFile: null,
+        //     dataFile: null
+        // },
+        // {
+        //     year: {start: 2000, end: 2016},
+        //     ages: [],
+        //     pathogen: [],
+        //     ssFile: null,
+        //     dataFile: null
+        // }
     ];
     for (var i = 0; i < opts.length; i++) {
         main(opts[i], i);
