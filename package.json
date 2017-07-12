@@ -10,6 +10,8 @@
   "author": "xeonkung",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.5.0",
+    "bluebird-retry": "^0.11.0",
     "commander": "^2.11.0",
     "defaults": "^1.0.3",
     "mkdirp": "^0.5.1",

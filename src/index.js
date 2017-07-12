@@ -16,6 +16,8 @@ var Horseman = require('node-horseman')
     , xlsx = require('node-xlsx')
     , defaults = require('defaults')
     , mkdirp = require('mkdirp')
+    , bluebird = require('bluebird')
+    , retry = require('bluebird-retry')
     , program = require('commander');
 
 program
@@ -123,24 +125,24 @@ var loadPhantomInstance = function () {
         webSecurity: true,
         ignoreSSLErrors: true,
         timeout: 90000,
-        interval: 100,
+        interval: 50,
         diskCache: true,
         diskCachePath: './cache/'
     };
 
     var phantomInstance = new Horseman(options);
 
-    phantomInstance.on('consoleMessage', function (msg) {
-        console.log('Phantom page log: ', msg);
-    });
+    // phantomInstance.on('consoleMessage', function (msg) {
+    //     console.log('Phantom page log: ', msg);
+    // });
 
     phantomInstance.on('error', function (msg) {
-        console.log('Phantom page error: ', msg);
+        console.error('Phantom page error!: ', msg);
     });
 
-    phantomInstance.on('resourceRequested', function (requestData, networkRequest) {
-        console.log('Phantom requested log: ', requestData.url);
-    });
+    // phantomInstance.on('resourceRequested', function (requestData, networkRequest) {
+    //     console.log('Phantom requested log: ', requestData.url);
+    // });
 
     return phantomInstance;
 };
@@ -181,7 +183,7 @@ var main = function (opts, idx = 0) {
         window.SelectXLargeContent8.change();
         return true;
     };
-    phantomInstance
+    return phantomInstance
         .userAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36')
         .viewport(1280, 800)
         .open('https://wwwn.cdc.gov/foodnetfast/')
@@ -227,25 +229,72 @@ var main = function (opts, idx = 0) {
             createXlsx(sheets, path.join(folderPath, dataFile), done);
         })
         .screenshot(path.join(folderPath, ssFile))
-        .close();
+        .close()
+        .then(function () {
+            console.info('Sucess on : ' + opts.dataName);
+            return bluebird.resolve();
+        }, function (e) {
+            // console.error('Fail on : ' + opts.dataName);
+            // console.error('Error is : ' + e);
+            return bluebird.reject('Fail on : ' + opts.dataName);
+        });
 };
+var retryJob = function (opt, idx) {
+    return main(opt, idx).then(function () {
 
+    }, function (_opt) {
+        return retryJob(_opt, idx);
+    });
+};
+var yearFactory = function(y) {
+    var s = {
+        year: {start: y, end: y},
+        ages: [4],
+        pathogen: [],
+        dataName: 'Data_All Pathogens_20-29_'+y+'.xlsx',
+        ssName: 'Graph_All Pathogens_20-29_'+y+'.png',
+        folderName: './All Pathogens/20-29/'+y+'/'
+    };
+    if (isNaN(y)) {
+        s.year.start = 1996;
+        s.year.end = 2016;
+    }
+    return s;
+};
 /**
  * Run immediately on script load to determine available actions and attempt to run the specified action
  */
 (function () {
     // setting combination too use program
     var opts = [
-        {
-            year: {start: 1996, end: 2016},
-            ages: [],
-            pathogen: [],
-            dataName: 'dataFile.xlsx',
-            ssName: 'ssFile.png',
-            folderName: './a/b/c/d'
-        }
+        //yearFactory('All Years'),
+        //yearFactory(1996),
+        //yearFactory(1997),
+        yearFactory(1998),
+        //yearFactory(1999),
+        // yearFactory(2000),
+        // yearFactory(2001),
+        // yearFactory(2002),
+        //yearFactory(2003),
+        //yearFactory(2004),
+        //yearFactory(2005),
+        //yearFactory(2006),
+        //yearFactory(2007),
+        // yearFactory(2008),
+        //yearFactory(2009),
+        //yearFactory(2010),
+        // yearFactory(2011),
+        // yearFactory(2012),
+        //yearFactory(2013),
+        // yearFactory(2014),
+        // yearFactory(2015),
+        //yearFactory(2016),
     ];
     for (var i = 0; i < opts.length; i++) {
-        main(opts[i], i);
+        retry(function (o, p) {
+            return main(o, p);
+        }, {args: [opts[i], i]}).caught(function(e) {
+            console.error(e.message);
+        });
     }
 })();
