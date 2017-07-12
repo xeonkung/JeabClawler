@@ -15,6 +15,7 @@ var Horseman = require('node-horseman')
     , j2a = require('./json2array')
     , xlsx = require('node-xlsx')
     , defaults = require('defaults')
+    , mkdirp = require('mkdirp')
     , program = require('commander');
 
 program
@@ -93,19 +94,19 @@ var searchOption = function (options) {
     var prop = this;
     if (_options.year.start != 1996) {
         prop = prop.select('#placeHolderForm_DropDownListBasicYearsFrom', _options.year.start)
-            .waitForNextPage({timeout: 10000});
+            .waitForNextPage({timeout: 90000});
     }
     if (_options.year.end != 2016) {
         prop = prop.select('#placeHolderForm_DropDownListBasicYearsTo', _options.year.end)
-            .waitForNextPage({timeout: 10000});
+            .waitForNextPage({timeout: 90000});
     }
     for (var i = 0; i < _options.ages.length; i++) {
         prop = prop.select('#placeHolderForm_DropDownListFilterAges', _options.ages[i])
-            .waitForNextPage({timeout: 10000});
+            .waitForNextPage({timeout: 90000});
     }
     for (var i = 0; i < _options.pathogen.length; i++) {
         prop = prop.select('#placeHolderForm_DropDownListFilterPathogens', _options.pathogen[i])
-            .waitForNextPage({timeout: 10000});
+            .waitForNextPage({timeout: 90000});
     }
     return prop;
 }
@@ -118,10 +119,10 @@ var loadPhantomInstance = function () {
     var options = {
         loadImages: true,
         injectJquery: true,
-        injectBluebird: false,
+        injectBluebird: true,
         webSecurity: true,
         ignoreSSLErrors: true,
-        timeout: 13000,
+        timeout: 90000,
         interval: 100,
         diskCache: true,
         diskCachePath: './cache/'
@@ -149,13 +150,16 @@ var loadPhantomInstance = function () {
  */
 var main = function (opts, idx = 0) {
     var folderPath = program.folderPath || './dist';
+    if (opts.folderName) {
+        folderPath = path.join(folderPath, opts.folderName);
+    }
     var dataFile = opts.dataName || 'data' + idx + '.xlsx';
     var ssFile = opts.ssName || 'ss' + idx + '.png';
     var phantomInstance = loadPhantomInstance();
     var sheets = [];
 
     if (!fs.existsSync(folderPath)) {
-        fs.mkdirSync(folderPath);
+        mkdirp.sync(folderPath);
     }
     var onSelectSmallContent4Change = function () {
         window.SelectSmallContent4.change();
@@ -233,26 +237,13 @@ var main = function (opts, idx = 0) {
     // setting combination too use program
     var opts = [
         {
-            year: {start: 2000, end: 2016},
-            ages: [1, 2],
-            pathogen: [78],
-            ssFile: null,
-            dataFile: null
-        },
-        // {
-        //     year: {start: 1996, end: 2016},
-        //     ages: [],
-        //     pathogen: [],
-        //     ssFile: null,
-        //     dataFile: null
-        // },
-        // {
-        //     year: {start: 2000, end: 2016},
-        //     ages: [],
-        //     pathogen: [],
-        //     ssFile: null,
-        //     dataFile: null
-        // }
+            year: {start: 1996, end: 2016},
+            ages: [],
+            pathogen: [],
+            dataName: 'dataFile.xlsx',
+            ssName: 'ssFile.png',
+            folderName: './a/b/c/d'
+        }
     ];
     for (var i = 0; i < opts.length; i++) {
         main(opts[i], i);

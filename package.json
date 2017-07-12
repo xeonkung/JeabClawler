@@ -12,6 +12,7 @@
   "dependencies": {
     "commander": "^2.11.0",
     "defaults": "^1.0.3",
+    "mkdirp": "^0.5.1",
     "node-horseman": "^3.3.0",
     "node-xlsx": "^0.7.4",
     "phantomjs-prebuilt": "^2.1.14",
